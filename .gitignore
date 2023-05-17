@@ -3,4 +3,6 @@ testing/CIFAR/data/*
 testing/FER/data/*
 .DS_Store
 plots/*
-
+output.csv
+output-old.txt
+trial_details/*
