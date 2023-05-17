@@ -1807,3 +1807,52 @@ Execution time: 00:34:27
 
 Finished Training with this combination
 ######################################################################
+Parameter Combination: 
+epochs: 100 
+learning_rate: 0.01 
+batch_size: 32 
+optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    initial_lr: 0.01
+    lr: 2.6561398887587566e-07
+    maximize: False
+    weight_decay: 0
+) 
+scheduler: <torch.optim.lr_scheduler.ExponentialLR object at 0x4904c2d00> 
+criterion: CrossEntropyLoss() 
+
+--------------------------------------------------
+Training Loss: 
+Min: 18.262117365573314
+Max: 18.367634026761284
+Average: 18.27052931078603
+
+--------------------------------------------------
+Training Accuracy: 
+Min: 0.0
+Max: 5.462758693140036
+Average: 0.451868193437686
+
+--------------------------------------------------
+Validation Loss: 
+Min: 18.17483377456665
+Max: 18.310614551816666
+Average: 18.194877062780513
+
+--------------------------------------------------
+Validation Accuracy: 
+Min: 0.0
+Max: 25.125768585802124
+Average: 0.5025153717160424
+
+Execution time: 00:37:21
+
+Finished Training with this combination
+######################################################################
