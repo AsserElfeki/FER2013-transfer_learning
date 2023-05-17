@@ -3,4 +3,4 @@ testing/CIFAR/data/*
 testing/FER/data/*
 .DS_Store
 plots/*
-output.txt
+
