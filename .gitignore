@@ -4,4 +4,4 @@ testing/FER/data/*
 .DS_Store
 
 # ignore all directories and files inside outputs directory
-outputs/*
+stats/*
