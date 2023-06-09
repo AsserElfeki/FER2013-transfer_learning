@@ -49,7 +49,7 @@ def classify_image(dataloader):
     
 
 def choose_image():
-    file_path = filedialog.askopenfilename(filetypes=[("JPEG Files", "*.jpeg"), ("PNG Files", "*.png"), ("JPG files", "*.jpg")]
+    file_path = filedialog.askopenfilename(filetypes=[("JPEG Files", "*.jpeg"), ("PNG Files", "*.png"), ("JPG files", "*.jpg"), ("WEBP file", "*.webp")]
 )
     if file_path:
         # Perform face detection and cropping using cv2
