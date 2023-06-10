@@ -3,8 +3,10 @@ from tkinter import filedialog
 import cv2
 from PIL import ImageTk, Image
 import torch
-from FE_model import Net
+import FE_model
 from torchvision.transforms import ToTensor
+import torchvision.models as models
+
 
 classes = {
     0: 'Neutral',
@@ -32,9 +34,9 @@ def create_data_loader (img):
 
         
 def classify_image(dataloader):
-    model = Net()
-    model.load_state_dict(torch.load('./mymodel.pth'))
-    model.eval()
+    # model = Net()
+    # model.load_state_dict(torch.load('./pretrained_resnet18.pt'))
+    # model.eval()
     
     predicted_class = ''
     
@@ -113,7 +115,16 @@ def capture_photo():
     
     # De-allocate any associated memory usage
     cv2.destroyAllWindows() 
+    
+model = models.resnet18(pretrained=True, progress=True)
 
+num_classes = len(FE_model.train_dataset.classes)
+in_features = model.fc.in_features
+
+# Modify the classifier
+model.fc = FE_model.nn.Linear(in_features, num_classes)
+model.load_state_dict(torch.load('./pretrained_resnet18.pt'))
+model.eval()
 
 window = tk.Tk()
 window.title("Smaluch - Moustafa")

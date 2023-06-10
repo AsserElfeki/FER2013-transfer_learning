@@ -1,8 +1,13 @@
+import io
+import os
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.mps
-
+from torch.utils.data import Dataset, DataLoader
+import pandas as pd
+import numpy as np
+from torchvision import transforms
 
 
 
@@ -46,3 +51,71 @@ class Net(nn.Module):
             # x = self.dropout(x)
             x = self.fc3(x)
             return x
+        
+        
+train_folder_path = './data/FER2013Train'
+test_folder_path = './data/FER2013Test'
+valid_folder_path = './data/FER2013Valid'
+
+
+class FERPlusDataset(Dataset):
+    """FERPlus dataset."""
+
+    def __init__(self, csv_file, root_dir, transform=None):
+        """
+        Arguments:
+            csv_file (string): Path to the csv file with annotations.
+            root_dir (string): Directory with all the images.
+            transform (callable, optional): Optional transform to be applied
+                on a sample.
+        """
+        self.img_frame = pd.read_csv(csv_file)
+        self.root_dir = root_dir
+        self.transform = transform
+
+        # Get the unique classes from the emotions column
+        self.classes = np.unique(self.img_frame.iloc[:, 2:]).tolist()
+        
+    def __len__(self):
+        return len(self.img_frame)
+
+#     to access elements using the []
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+#   to create the image name
+        img_name = os.path.join(self.root_dir, self.img_frame.iloc[idx, 0])
+
+        image = io.imread(img_name)
+        emotions = self.img_frame.iloc[idx, 2:]
+        emotions = np.asarray(emotions)
+        emotions = emotions.astype('float32')
+
+        sample = {'image': image, 'emotions': emotions} # a dictionary of an image with its label
+        if self.transform:
+            sample = self.transform(sample)
+
+        return sample #return a transformed image with label
+    
+    
+        
+class ToTensor(object):
+    """Convert ndarrays in sample to Tensors."""
+
+    def __call__(self, sample):
+        image, emotions = sample['image'], sample['emotions']
+
+        # Convert grayscale image to RGB
+        image_rgb = np.repeat(image[..., np.newaxis], 3, axis=-1)
+
+        transform = transforms.ToTensor()
+
+        return {'image': transform(image_rgb),
+                'emotions': emotions}
+
+
+
+train_dataset = FERPlusDataset(os.path.join(train_folder_path,"label.csv"), train_folder_path, transform=ToTensor())
+valid_dataset = FERPlusDataset(os.path.join(valid_folder_path, "label.csv"), valid_folder_path, transform=ToTensor())
+test_dataset = FERPlusDataset(os.path.join(test_folder_path, "label.csv"), test_folder_path, transform=ToTensor())
