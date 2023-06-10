@@ -3,10 +3,8 @@ from tkinter import filedialog
 import cv2
 from PIL import ImageTk, Image
 import torch
-import FE_model
+from FE_model import Net
 from torchvision.transforms import ToTensor
-import torchvision.models as models
-
 global model 
 selected_option = ''
 classes = {
