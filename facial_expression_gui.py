@@ -7,7 +7,8 @@ import FE_model
 from torchvision.transforms import ToTensor
 import torchvision.models as models
 
-
+global model 
+selected_option = ''
 classes = {
     0: 'Neutral',
     1: 'Happinnes',
@@ -34,10 +35,6 @@ def create_data_loader (img):
 
         
 def classify_image(dataloader):
-    # model = Net()
-    # model.load_state_dict(torch.load('./pretrained_resnet18.pt'))
-    # model.eval()
-    
     predicted_class = ''
     
     for data in dataloader: 
@@ -51,6 +48,7 @@ def classify_image(dataloader):
     
 
 def choose_image():
+    print(model)
     file_path = filedialog.askopenfilename(filetypes=[("JPEG Files", "*.jpeg"), ("PNG Files", "*.png"), ("JPG files", "*.jpg"), ("WEBP file", "*.webp")]
 )
     if file_path:
@@ -69,7 +67,10 @@ def choose_image():
             # resized_pil_image = pil_image.resize((200, 200))
             # image_tk = ImageTk.PhotoImage(resized_pil_image)
             # images.push(image_tk)
-            label = classify_image(create_data_loader(gray_img))
+            if selected_option == 'RESNET':
+                label = classify_image(create_data_loader(resized_img))
+            elif selected_option == 'CNN':
+                label = classify_image(create_data_loader(gray_img))
             cv2.putText(image, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)        
 
         cv2.imshow('original', image)
@@ -100,7 +101,11 @@ def capture_photo():
             cropped_img = image[y:y+h, x:x+w]
             resized_img = cv2.resize(cropped_img, (48, 48))
             gray_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
-            label = classify_image(create_data_loader(gray_img))
+            if selected_option == 'RESNET':
+                label = classify_image(create_data_loader(resized_img))
+            elif selected_option == 'CNN':
+                label = classify_image(create_data_loader(gray_img))
+                    
             cv2.putText(image, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
         # Display an image in a window
         cv2.imshow('img',image)
@@ -115,17 +120,42 @@ def capture_photo():
     
     # De-allocate any associated memory usage
     cv2.destroyAllWindows() 
+
+def choose_transfer_learning():  
+    global model
+    print("choose RESNET")
+      
+    model = models.resnet18(pretrained=True, progress=True)
+
+    num_classes = len(FE_model.train_dataset.classes)
+    in_features = model.fc.in_features
+
+    # Modify the classifier
+    model.fc = FE_model.nn.Linear(in_features, num_classes)
+    model.load_state_dict(torch.load('./pretrained_resnet18.pt'))
+    model.eval()
+    print(model)
+def choose_my_CNN():
+    global model
+    print("choose CNN")
+    model = FE_model.Net()
+    model.load_state_dict(torch.load('./mymodel.pth'))
+    model.eval()    
+    print(model)
+
+def choose_mode(option):
+    global model
+    global selected_option
     
-model = models.resnet18(pretrained=True, progress=True)
+    if option == "RESNET18":
+        choose_transfer_learning()
+        selected_option = 'RESNET'
+    elif option == "CNN":
+        choose_my_CNN()
+        selected_option = 'CNN'
 
-num_classes = len(FE_model.train_dataset.classes)
-in_features = model.fc.in_features
-
-# Modify the classifier
-model.fc = FE_model.nn.Linear(in_features, num_classes)
-model.load_state_dict(torch.load('./pretrained_resnet18.pt'))
-model.eval()
-
+        
+        
 window = tk.Tk()
 window.title("Smaluch - Moustafa")
 bg_color = 'light blue'
@@ -158,6 +188,13 @@ choose_button.pack()
 
 capture_button = tk.Button(window, text="Take Photo", command=capture_photo)
 capture_button.pack()
+
+
+selected_option = tk.StringVar(window)
+selected_option.set("RESNET18")  # Set default option
+
+mode_button = tk.OptionMenu(window, selected_option, "RESNET18", "CNN", command=choose_mode)
+mode_button.pack()
 
 
 # exit button at the bottom right corner
