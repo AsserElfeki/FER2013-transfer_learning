@@ -1,15 +1,25 @@
-import io
-import os
 import torch
-import torch.nn.functional as F
 import torch.nn as nn
-import torch.mps
+import torch.optim as optim
+from torch.utils.data import DataLoader
+from torchvision.datasets import ImageFolder
+from torchvision import transforms, utils
 from torch.utils.data import Dataset, DataLoader
+import os
+from PIL import Image
 import pandas as pd
 import numpy as np
-from torchvision import transforms
-
-
+from skimage import io, transform
+import matplotlib.pyplot as plt
+import time
+import torch.nn.functional as F
+import torch.mps 
+import itertools
+import csv
+from torchmetrics import Accuracy
+import torchvision.models as models
+from torchvision.models import ResNet18_Weights
+import cv2
 
 class Net(nn.Module):
         def __init__(self, drop=0.2):
@@ -74,7 +84,7 @@ class FERPlusDataset(Dataset):
         self.transform = transform
 
         # Get the unique classes from the emotions column
-        self.classes = np.unique(self.img_frame.iloc[:, 2:]).tolist()
+        self.classes = self.img_frame.iloc[:, 2:].shape[1]
         
     def __len__(self):
         return len(self.img_frame)
@@ -83,21 +93,24 @@ class FERPlusDataset(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-
+            
 #   to create the image name
         img_name = os.path.join(self.root_dir, self.img_frame.iloc[idx, 0])
 
-        image = io.imread(img_name)
+        gray_image = cv2.imread(img_name, cv2.IMREAD_GRAYSCALE)
+        color_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+        
+        # image = io.imread(img_name)
+        image = Image.fromarray(color_image)
         emotions = self.img_frame.iloc[idx, 2:]
         emotions = np.asarray(emotions)
         emotions = emotions.astype('float32')
 
         sample = {'image': image, 'emotions': emotions} # a dictionary of an image with its label
         if self.transform:
-            sample = self.transform(sample)
+            sample['image'] = self.transform(sample['image'])
 
         return sample #return a transformed image with label
-    
     
         
 class ToTensor(object):
@@ -115,7 +128,25 @@ class ToTensor(object):
                 'emotions': emotions}
 
 
+mu, st = 0, 1
 
-train_dataset = FERPlusDataset(os.path.join(train_folder_path,"label.csv"), train_folder_path, transform=ToTensor())
-valid_dataset = FERPlusDataset(os.path.join(valid_folder_path, "label.csv"), valid_folder_path, transform=ToTensor())
-test_dataset = FERPlusDataset(os.path.join(test_folder_path, "label.csv"), test_folder_path, transform=ToTensor())
+data_transforms = {
+    'train': transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomResizedCrop(48, scale=(0.8, 1.2)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=(mu,), std=(st,))
+    ]),
+    'val': transforms.Compose([
+        transforms.ToTensor(),
+        # transforms.Normalize(mean=(mu,), std=(st,))
+    ]),
+}
+
+
+
+train_dataset = FERPlusDataset(os.path.join(train_folder_path,"label.csv"), train_folder_path, transform=data_transforms['train'])
+valid_dataset = FERPlusDataset(os.path.join(valid_folder_path, "label.csv"), valid_folder_path, transform=data_transforms['val'])
+test_dataset = FERPlusDataset(os.path.join(test_folder_path, "label.csv"), test_folder_path, transform=data_transforms['val'])
+
+

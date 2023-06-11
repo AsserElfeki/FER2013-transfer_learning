@@ -6,6 +6,8 @@ import torch
 import FE_model 
 from torchvision.transforms import ToTensor
 from torchvision import models
+from torchvision.models import ResNet18_Weights
+import torch.nn as nn
 
 global model 
 selected_option = ''
@@ -58,20 +60,31 @@ def choose_image():
         face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         faces = face_cascade.detectMultiScale(
             image, scaleFactor=1.1, minNeighbors=4, minSize=(30, 30))
-        for (x, y, w, h) in faces:
-            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cropped_img = image[y:y+h, x:x+w]
-            resized_img = cv2.resize(cropped_img, (48, 48))
+        if len(faces) == 0:
+            resized_img = cv2.resize(image, (48, 48))
             gray_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
-            # pil_image = Image.fromarray(gray_img)
-            # resized_pil_image = pil_image.resize((200, 200))
-            # image_tk = ImageTk.PhotoImage(resized_pil_image)
-            # images.push(image_tk)
             if selected_option == 'RESNET':
                 label = classify_image(create_data_loader(resized_img))
             elif selected_option == 'CNN':
                 label = classify_image(create_data_loader(gray_img))
-            cv2.putText(image, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)        
+            
+            cv2.putText(image, label, (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
+            # Display an image in a window
+        else:    
+            for (x, y, w, h) in faces:
+                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cropped_img = image[y:y+h, x:x+w]
+                resized_img = cv2.resize(cropped_img, (48, 48))
+                gray_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
+                # pil_image = Image.fromarray(gray_img)
+                # resized_pil_image = pil_image.resize((200, 200))
+                # image_tk = ImageTk.PhotoImage(resized_pil_image)
+                # images.push(image_tk)
+                if selected_option == 'RESNET':
+                    label = classify_image(create_data_loader(resized_img))
+                elif selected_option == 'CNN':
+                    label = classify_image(create_data_loader(gray_img))
+                cv2.putText(image, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)        
 
         cv2.imshow('original', image)
         cv2.waitKey(0)
@@ -94,22 +107,33 @@ def capture_photo():
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         # Detects faces of different sizes in the input image
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-    
-        for (x,y,w,h) in faces:
-            # To draw a rectangle in a face 
-            cv2.rectangle(image,(x,y),(x+w,y+h),(255,255,0),2) 
-            cropped_img = image[y:y+h, x:x+w]
-            resized_img = cv2.resize(cropped_img, (48, 48))
+        if len(faces) == 0:
+            resized_img = cv2.resize(image, (48, 48))
             gray_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
             if selected_option == 'RESNET':
                 label = classify_image(create_data_loader(resized_img))
             elif selected_option == 'CNN':
                 label = classify_image(create_data_loader(gray_img))
-                    
-            cv2.putText(image, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
-        # Display an image in a window
+            
+            cv2.putText(image, label, (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
+            # Display an image in a window
+            
+        else:        
+            for (x,y,w,h) in faces:
+                # To draw a rectangle in a face 
+                cv2.rectangle(image,(x,y),(x+w,y+h),(255,255,0),2) 
+                cropped_img = image[y:y+h, x:x+w]
+                resized_img = cv2.resize(cropped_img, (48, 48))
+                gray_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
+                if selected_option == 'RESNET':
+                    label = classify_image(create_data_loader(resized_img))
+                elif selected_option == 'CNN':
+                    label = classify_image(create_data_loader(gray_img))
+                        
+                cv2.putText(image, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
+            # Display an image in a window
         cv2.imshow('img',image)
-    
+        
         # Wait for Esc key to stop
         k = cv2.waitKey(30) & 0xff
         if k == 27:
@@ -125,23 +149,23 @@ def choose_transfer_learning():
     global model
     print("choose RESNET")
       
-    model = models.resnet18(pretrained=True, progress=True)
+    model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
 
-    num_classes = len(FE_model.train_dataset.classes)
+    num_classes = FE_model.train_dataset.classes
     in_features = model.fc.in_features
 
     # Modify the classifier
-    model.fc = FE_model.nn.Linear(in_features, num_classes)
-    model.load_state_dict(torch.load('./pretrained_resnet18.pt'))
+    model.fc = nn.Linear(in_features=in_features, out_features=num_classes)
+    model.load_state_dict(torch.load('./pretrained_resnet18_10_epochs.pt'))
     model.eval()
-    print(model)
+    # print(model)
 def choose_my_CNN():
     global model
     print("choose CNN")
     model = FE_model.Net()
     model.load_state_dict(torch.load('./mymodel.pth'))
     model.eval()    
-    print(model)
+    # print(model)
 
 def choose_mode(option):
     global model
