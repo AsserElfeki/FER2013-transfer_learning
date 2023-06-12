@@ -2,7 +2,5 @@ data/*
 testing/*
 stats/*
 .DS_Store
-*.pth
-*.pt 
 *.txt
 *.xml
