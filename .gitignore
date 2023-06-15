@@ -4,3 +4,8 @@ stats/*
 .DS_Store
 *.txt
 *.xml
+models/*
+*.pt
+*.pth
+*.txt
+report/*

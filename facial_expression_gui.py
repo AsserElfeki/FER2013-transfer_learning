@@ -50,7 +50,6 @@ def classify_image(dataloader):
     
 
 def choose_image():
-    print(model)
     file_path = filedialog.askopenfilename(filetypes=[("JPEG Files", "*.jpeg"), ("PNG Files", "*.png"), ("JPG files", "*.jpg"), ("WEBP file", "*.webp")]
 )
     if file_path:
@@ -68,7 +67,7 @@ def choose_image():
             elif selected_option == 'CNN':
                 label = classify_image(create_data_loader(gray_img))
             
-            cv2.putText(image, label, (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
+            cv2.putText(image, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
             # Display an image in a window
         else:    
             for (x, y, w, h) in faces:
@@ -115,7 +114,7 @@ def capture_photo():
             elif selected_option == 'CNN':
                 label = classify_image(create_data_loader(gray_img))
             
-            cv2.putText(image, label, (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
+            cv2.putText(image, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12) ,2)
             # Display an image in a window
             
         else:        
@@ -156,16 +155,15 @@ def choose_transfer_learning():
 
     # Modify the classifier
     model.fc = nn.Linear(in_features=in_features, out_features=num_classes)
-    model.load_state_dict(torch.load('./pretrained_resnet18_10_epochs.pt'))
+    model.load_state_dict(torch.load('./models/pretrained_resnet18_10_epochs.pt'))
     model.eval()
-    # print(model)
+    
 def choose_my_CNN():
     global model
     print("choose CNN")
     model = FE_model.Net()
-    model.load_state_dict(torch.load('./mymodel.pth'))
+    model.load_state_dict(torch.load('./models/myCNN_aug_200_epochs.pth'))
     model.eval()    
-    # print(model)
 
 def choose_mode(option):
     global model
@@ -204,21 +202,21 @@ window.geometry(f"{window_width}x{window_height}+{x}+{y}")
 label = tk.Label(window, text="Facial Expression Recognition", font=("Helvetica", 16))
 label.pack()
 
+selected_option = tk.StringVar(window)
+selected_option.set("select NN")  # Set default option
+
+mode_button = tk.OptionMenu(window, selected_option, "RESNET18", "CNN", command=choose_mode)
+mode_button.pack()
 
 # Add buttons
 choose_button = tk.Button(window, text="Choose Image", command=choose_image, bg=bg_color)
 choose_button.pack()
 
 
-capture_button = tk.Button(window, text="Take Photo", command=capture_photo)
+capture_button = tk.Button(window, text="Live Classification", command=capture_photo)
 capture_button.pack()
 
 
-selected_option = tk.StringVar(window)
-selected_option.set("RESNET18")  # Set default option
-
-mode_button = tk.OptionMenu(window, selected_option, "RESNET18", "CNN", command=choose_mode)
-mode_button.pack()
 
 
 # exit button at the bottom right corner
