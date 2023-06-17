@@ -191,24 +191,3 @@ def output_details_to_text (outputs_path, model, epochs, optimizer, scheduler ,c
     output_file.write("#"*70)
     output_file.close()    
     
-    
-def output_details_to_text (path, model, epochs, optimizer, scheduler ,criterion, batch_size, learning_rate, id):    
-    # Create a file to write the output
-    filename = f'{path}/trial_details/trial_{id}'
-    output_file = open(filename, "w")
-
-    output_file.write(f"Parameter Combination: \n")
-    output_file.write(f"epochs: {epochs} \n")
-    output_file.write(f"initial learning_rate: {learning_rate} \n")
-    output_file.write(f"batch_size: {batch_size} \n")
-    output_file.write(f"optimizer: {optimizer} \n")
-    output_file.write(f"scheduler: {scheduler} \n")
-    output_file.write(f"criterion: {criterion} \n")
-    output_file.write(f"\n")
-    output_file.write(f"\n")
-    output_file.write(f"architecture: {model}")
-    
-    output_file.write(f"Finished Training with this combination\n")
-    
-    output_file.write("#"*70)
-    output_file.close()

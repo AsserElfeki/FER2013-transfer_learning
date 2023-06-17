@@ -2,6 +2,7 @@ import time
 import torch.optim as optim
 import data.FerPlus as FP
 import torch
+import torch.nn.functional as F
 from utils.loggers import write_RESNET_details_to_table, write_to_table, create_accuracy_loss_plot, output_details_to_text
 
 device = FP.get_device()
@@ -11,7 +12,25 @@ elif device == torch.device("mps"):
     device_name = 'MPS'
     
    
-def train_and_validate(path, epochs, optimizer, scheduler ,criterion, model, trainloader, validloader, batch_size, learning_rate, activation_func, trial_id=0):
+def train_and_validate(path, epochs, optimizer, scheduler ,criterion, model, trainloader, validloader, batch_size, learning_rate, activation_func = F.relu, trial_id=0):
+    """
+    Trains and validates the given model using the provided data loaders and hyperparameters.
+    
+    :param path: str - Path to the directory to save the model and plots.
+    :param epochs: int - Number of epochs to train the model.
+    :param optimizer: function - The optimizer function to use.
+    :param scheduler: function - The learning rate scheduler function to use.
+    :param criterion: function - The loss function to use.
+    :param model: torch.nn.Module - The model to train and validate.
+    :param trainloader: torch.utils.data.DataLoader - The data loader for the training set.
+    :param validloader: torch.utils.data.DataLoader - The data loader for the validation set.
+    :param batch_size: int - The batch size to use for training and validation.
+    :param learning_rate: float - The learning rate to use for the optimizer.
+    :param activation_func: function (optional) - The activation function to use.
+    :param trial_id: int (optional) - The id to use in the file name when saving the model.
+    
+    :returns: tuple - A tuple containing the trained model, training and validation accuracies and losses, time elapsed during training, and the learning rate scheduler used.
+    """
     train_loss = []
     train_accuracy = []
     valid_loss = []

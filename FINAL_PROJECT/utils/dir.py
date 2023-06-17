@@ -1,7 +1,24 @@
 import os
 
 def create_output_directories(path='outputs'):
-    
+    """
+    Creates output directories for storing results and plots.
+
+    Args:
+        path (str): Path to the parent directory where output directories will be created.
+                    Defaults to 'outputs'.
+
+    Returns:
+        str: Path of the newly created outputs directory.
+
+    Raises:
+        OSError: If there is an error in creating the directories.
+
+    Example:
+        >>> create_output_directories()
+        Output will be in outputs/outputs-1
+        'outputs/outputs-1'
+    """
     # Find the latest number used in 'outputs' directory
     max_output_num = 0
     for name in os.listdir(path):

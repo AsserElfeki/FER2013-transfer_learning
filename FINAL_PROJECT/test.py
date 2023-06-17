@@ -14,14 +14,15 @@ classes = FP.get_classes('test')
 
 def test_model(model, test_loader, path):
     """
-    Calculates evaluation metrics for a given model using a specified test dataset. 
-    The metrics calculated are precision, recall, F1 score, and confusion matrix. 
-
-    :param model: PyTorch model to be evaluated.
-    :type model: torch.nn.Module
-    :param test_loader: PyTorch DataLoader object containing the test dataset.
-    :type test_loader: torch.utils.data.DataLoader
-    :return: None
+    Evaluate a PyTorch model on a given test dataset and log evaluation metrics.
+    
+    Args:
+        model (nn.Module): A PyTorch model to evaluate.
+        test_loader (DataLoader): A PyTorch DataLoader for the test dataset.
+        path (str): The path to save the confusion matrix plot.
+        
+    Returns:
+        None
     """
     model.to('cpu')
     model.eval()
@@ -52,9 +53,9 @@ def test_model(model, test_loader, path):
             true_labels.extend(labels.cpu().numpy())
             
             # Calculate evaluation metrics
-        f1 = f1_score(true_labels, predicted_labels, average='weighted')
-        precision = precision_score(true_labels, predicted_labels, average='weighted', zero_division=1)
-        recall = recall_score(true_labels, predicted_labels, average='weighted')
+        f1 = f1_score(true_labels, predicted_labels, average='micro')
+        precision = precision_score(true_labels, predicted_labels, average='micro', zero_division=1)
+        recall = recall_score(true_labels, predicted_labels, average='micro')
         # confusion_mat = confusion_matrix(true_labels, predicted_labels)
         
         cm_display = ConfusionMatrixDisplay.from_predictions(y_true=true_labels, y_pred=predicted_labels, normalize='true', display_labels=classes, cmap='Blues', values_format='0.2f', xticks_rotation=45)
@@ -77,5 +78,5 @@ def test_model(model, test_loader, path):
         # print total accuracy
         print('Accuracy of the network on the test images: %d %%' % (100 * correct / total))
         print(f"correct: {correct}, total: {total}")
-        print(test_accuracy)
-        print(sum(test_accuracy) / len(test_accuracy))
+        # print(test_accuracy)
+        print(sum(test_accuracy).item() / len(test_accuracy))
