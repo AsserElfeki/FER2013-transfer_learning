@@ -9,3 +9,7 @@ models/*
 *.pth
 *.txt
 report/*
+
+__pycache__/
+
+FINAL_PROJECT/outputs
