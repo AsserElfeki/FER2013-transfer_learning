@@ -61,7 +61,7 @@ def load_and_test_pretrained_CNN(pretrained_model_path):
     model.eval()
     output_path = create_output_directories('outputs')
     
-    test_model(model, testloader, output_path) 
+    test_model(model, testloader, output_path, pretrained_model_path) 
 
 
 def train_and_test_pretrained_pretrained_RESNET(weight_freezing=False):
@@ -132,8 +132,7 @@ def load_and_test_RESNET(pretrained_model_path):
     # load model from path
     model.load_state_dict(torch.load(pretrained_model_path))    
        
-    train_dataset, validation_dataset, test_dataset = get_datasets(augmentation=False)
     path = create_output_directories()
     
-    test_model(model, testloader, path)
+    test_model(model, testloader, path, pretrained_model_path)
     

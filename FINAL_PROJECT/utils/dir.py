@@ -29,11 +29,11 @@ def create_output_directories(path='outputs'):
     # Increment the number for the new outputs directory
     new_output_num = max_output_num + 1
     new_outputs_dir = os.path.join(path, f'outputs-{new_output_num}')
-    plots_dir = os.path.join(new_outputs_dir, 'plots')
+    # plots_dir = os.path.join(new_outputs_dir, 'plots')
     
     os.makedirs(new_outputs_dir)
     
-    os.makedirs(plots_dir)
+    # os.makedirs(plots_dir)
     print(f"Output will be in {new_outputs_dir}")
     return new_outputs_dir
 
