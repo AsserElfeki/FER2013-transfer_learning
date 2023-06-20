@@ -202,6 +202,8 @@ def choose_my_CNN():
     # model.load_state_dict(torch.load('../stats/outputs-7-no_aug/trial_1.pth'))
     model.load_state_dict(torch.load('../stats/CNNs-2/models/trial_2.pth'))
     # model.load_state_dict(torch.load('../stats/CNNs/models/trial_25.pth'))
+    # model.load_state_dict(torch.load('../stats/CNNs-Final/models/trial_1.pth'))
+    
     
     
     

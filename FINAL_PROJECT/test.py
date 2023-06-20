@@ -63,8 +63,9 @@ def test_model(model, test_loader, path, pretrained_model_path):
         cm_display = ConfusionMatrixDisplay.from_predictions(y_true=true_labels, y_pred=predicted_labels, normalize='true', display_labels=classes, cmap='Blues', values_format='0.2f', xticks_rotation=45)
         fig, ax = plt.subplots(figsize=(10,8))
         cm_display.plot(ax=ax)
-        id = re.findall(r'\d+',pretrained_model_path)
+        id = re.findall(r'_(\d+)',pretrained_model_path)
         id = int(id[0])
+        
         plot_path = os.path.join(path, f'CM-{id}.png')
         plt.savefig(plot_path)
         with open(os.path.join(path,f'output-{id}.txt'), 'w') as file:

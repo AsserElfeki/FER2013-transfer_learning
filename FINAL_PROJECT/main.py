@@ -9,11 +9,12 @@ import os
 #         if os.path.isfile(os.path.join('../stats/RESNET-Final/models', file_name)):
 #             load_and_test_RESNET(os.path.join('../stats/RESNET-Final/models', file_name))
 
-for file_name in os.listdir('../stats/CNNs-Final/models'):
-        if os.path.isfile(os.path.join('../stats/CNNs-Final/models', file_name)):
-            load_and_test_pretrained_CNN(os.path.join('../stats/CNNs-Final/models', file_name))
+# 17 to 20
+# for file_name in os.listdir('../stats/CNNs-Final/models'):
+#         if os.path.isfile(os.path.join('../stats/CNNs-Final/models', file_name)):
+#             load_and_test_pretrained_CNN(os.path.join('../stats/CNNs-Final/models', file_name))
             
-
+# 21 to 36
 for file_name in os.listdir('../stats/CNNs-2/models'):
         if os.path.isfile(os.path.join('../stats/CNNs-2/models', file_name)):
             load_and_test_pretrained_CNN(os.path.join('../stats/CNNs-2/models', file_name))            
