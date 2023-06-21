@@ -10,6 +10,8 @@ import torchvision.models as models
 from torchvision.models import ResNet18_Weights
 from data.FerPlus import FERPlusDataset
 import torch.nn as nn
+import matplotlib.pyplot as plt
+
 
 def train_and_test_untrained_CNN():
     """
@@ -59,9 +61,9 @@ def load_and_test_pretrained_CNN(pretrained_model_path):
     model.load_state_dict(torch.load(pretrained_model_path))
     print("model loaded successfully")
     model.eval()
-    output_path = create_output_directories('outputs')
+    output_path = create_output_directories(pretrained_model_path)
     
-    test_model(model, testloader, output_path, pretrained_model_path) 
+    test_model(model, testloader, output_path, pretrained_model_path)
 
 
 def train_and_test_pretrained_pretrained_RESNET(weight_freezing=False):
@@ -132,7 +134,7 @@ def load_and_test_RESNET(pretrained_model_path):
     # load model from path
     model.load_state_dict(torch.load(pretrained_model_path))    
        
-    path = create_output_directories()
+    path = create_output_directories(pretrained_model_path=pretrained_model_path)
     
     test_model(model, testloader, path, pretrained_model_path)
     

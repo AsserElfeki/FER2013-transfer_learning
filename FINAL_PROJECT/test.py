@@ -55,9 +55,9 @@ def test_model(model, test_loader, path, pretrained_model_path):
             true_labels.extend(labels.cpu().numpy())
             
             # Calculate evaluation metrics
-        f1 = f1_score(true_labels, predicted_labels, average='weighted')
-        precision = precision_score(true_labels, predicted_labels, average='weighted', zero_division=1)
-        recall = recall_score(true_labels, predicted_labels, average='weighted')
+        f1 = f1_score(true_labels, predicted_labels, average='macro')
+        precision = precision_score(true_labels, predicted_labels, average='macro', zero_division=1)
+        recall = recall_score(true_labels, predicted_labels, average='macro')
         # confusion_mat = confusion_matrix(true_labels, predicted_labels)
         
         cm_display = ConfusionMatrixDisplay.from_predictions(y_true=true_labels, y_pred=predicted_labels, normalize='true', display_labels=classes, cmap='Blues', values_format='0.2f', xticks_rotation=45)
@@ -68,6 +68,7 @@ def test_model(model, test_loader, path, pretrained_model_path):
         
         plot_path = os.path.join(path, f'CM-{id}.png')
         plt.savefig(plot_path)
+        plt.close('all')
         with open(os.path.join(path,f'output-{id}.txt'), 'w') as file:
             # Log evaluation metrics
             file.write(f"{pretrained_model_path}\n\n")
@@ -78,17 +79,13 @@ def test_model(model, test_loader, path, pretrained_model_path):
             file.write(f"Recall: { recall:.2f}\n")
             file.write(f"correct: {correct}, total: {total}\n")
         
-        # # Log evaluation metrics
-        # print("Evaluation Metrics:")
-        # print(f"average accuracy : {100* (sum(test_accuracy) / len(test_accuracy)):.2f}%")
-        # print(f"F1 Score: {100* f1 :.2f}%")
-        # print(f"Precision: {100* precision :.2f}%")
-        # print(f"Recall: {100* recall :.2f}%")
-        # print("Confusion Matrix:")
-        # # print(confusion_mat)
-        
-        # # print total accuracy
-        # print('Accuracy of the network on the test images: %d %%' % (100 * correct / total))
-        # print(f"correct: {correct}, total: {total}")
+        # Log evaluation metrics
+        print(f"Evaluation Metrics for {pretrained_model_path}:")
+        print(f"test accuracy : {100* (sum(test_accuracy) / len(test_accuracy)):.2f}%")
+        print(f"F1 Score: {f1 :.2f}")
+        print(f"Precision: {precision :.2f}")
+        print(f"Recall: {recall :.2f}")
+        print(f"correct: {correct}, total: {total}")
+        print('#'*30)
         # # print(test_accuracy)
         # print(sum(test_accuracy).item() / len(test_accuracy))
