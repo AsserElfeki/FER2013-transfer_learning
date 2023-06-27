@@ -180,7 +180,7 @@ def choose_transfer_learning():
     model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
     model.fc = nn.Linear(in_features=in_features, out_features=num_classes)
     # model.load_state_dict(torch.load('../models/RESNET/RESNET-18_11.pth'))
-    model.load_state_dict(torch.load('../stats/RESNET-Final/models/trial_3.pth'))
+    model.load_state_dict(torch.load('./GUI_models/RESNET.pth'))
     # model.load_state_dict(torch.load('../stats/RESNET-Final/models/trial_11.pth'))
     
     
@@ -200,7 +200,7 @@ def choose_my_CNN():
     # model.load_state_dict(torch.load('../models/mymodel.pth'))
     
     # model.load_state_dict(torch.load('../stats/outputs-7-no_aug/trial_1.pth'))
-    model.load_state_dict(torch.load('../stats/CNNs-2/models/trial_2.pth'))
+    model.load_state_dict(torch.load('./GUI_models/CNN.pth'))
     # model.load_state_dict(torch.load('../stats/CNNs/models/trial_25.pth'))
     # model.load_state_dict(torch.load('../stats/CNNs-Final/models/trial_1.pth'))
     

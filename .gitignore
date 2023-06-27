@@ -9,7 +9,9 @@ models/*
 *.pth
 *.txt
 report/*
-
+archive.zip
+output.csv
+true-false.py
 __pycache__/
 
 FINAL_PROJECT/outputs
